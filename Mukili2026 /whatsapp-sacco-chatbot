@@ -1,0 +1,6 @@
+whatsapp-sacco-chatbot/
+│
+├── index.js        👈 MAIN BOT BRAIN (PASTE CODE HERE)
+├── package.json
+├── .env            (optional)
+└── README.md
