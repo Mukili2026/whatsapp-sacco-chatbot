@@ -1,12 +1,17 @@
 {
   "name": "sacco-assist-webhook",
   "version": "1.0.0",
-  "description": "WhatsApp webhook for SACCO Assist",
+  "description": "AI-powered WhatsApp SACCO assistant webhook for community finance in Africa",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.1.6"
   }
 }
