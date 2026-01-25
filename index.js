@@ -1,18 +1,123 @@
+const db = require("./database");
 const express = require("express");
-const app = express();
 
+const app = express();
 app.use(express.json());
 
+// --------------------
+// SIMPLE STATE STORAGE
+// --------------------
+const userStates = {};
+
+// --------------------
+// MENU FUNCTIONS
+// --------------------
+function mainMenu() {
+  return `👋 Welcome to SACCO Assist
+
+1️⃣ Join SACCO
+2️⃣ Check Savings
+3️⃣ Loan Services
+4️⃣ Contributions
+5️⃣ Statements
+6️⃣ Help
+
+Reply with a number`;
+}
+
+function handleMainMenu(from, message) {
+  switch (message) {
+    case "1":
+      userStates[from] = "JOIN_SACCO";
+      return "📝 Please send: FULL NAME, MEMBER ID (or N/A)";
+    case "2":
+      userStates[from] = "CHECK_SAVINGS";
+      return "💰 Checking your savings balance...";
+    default:
+      return "❌ Invalid option. Reply 1–6.";
+  }
+}
+
+// --------------------
+// MESSAGE PROCESSOR
+// --------------------
+function processMessage(from, message) {
+  message = message.trim();
+
+  if (["hi", "hello", "start", "menu"].includes(message.toLowerCase())) {
+    userStates[from] = "MAIN_MENU";
+    return mainMenu();
+  }
+
+  const state = userStates[from] || "MAIN_MENU";
+
+  // JOIN SACCO
+  if (state === "JOIN_SACCO") {
+    const parts = message.split(",");
+    if (parts.length < 2) {
+      return "❌ Please send: FULL NAME, MEMBER ID (or N/A)";
+    }
+
+    const name = parts[0].trim();
+    const memberId = parts[1].trim();
+
+    db.run(
+      `INSERT OR IGNORE INTO members (phone, name, member_id)
+       VALUES (?, ?, ?)`,
+      [from, name, memberId]
+    );
+
+    userStates[from] = "MAIN_MENU";
+    return "✅ Registration successful!\nReply MENU.";
+  }
+
+  // CHECK SAVINGS
+  if (state === "CHECK_SAVINGS") {
+    db.get(
+      `SELECT savings FROM members WHERE phone = ?`,
+      [from],
+      (err, row) => {
+        if (err || !row) {
+          return "❌ Member not found. Please register first.";
+        }
+      }
+    );
+
+    userStates[from] = "MAIN_MENU";
+    return "💰 Your savings balance is UGX 0\nReply MENU.";
+  }
+
+  // MAIN MENU
+  return handleMainMenu(from, message);
+}
+
+// --------------------
+// WEBHOOK ENDPOINT
+// --------------------
+app.post("/webhook", (req, res) => {
+  const { from, message } = req.body;
+
+  if (!from || !message) {
+    return res.status(400).json({ error: "Invalid request" });
+  }
+
+  const reply = processMessage(from, message);
+  console.log("Reply:", reply);
+
+  res.json({ reply });
+});
+
+// --------------------
+// HEALTH CHECK
+// --------------------
 app.get("/", (req, res) => {
   res.send("SACCO Assist webhook is running ✅");
 });
 
-app.post("/webhook", (req, res) => {
-  console.log("Incoming message:", JSON.stringify(req.body, null, 2));
-  res.sendStatus(200);
-});
-
+// --------------------
+// START SERVER
+// --------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server running on port", PORT);
 });
