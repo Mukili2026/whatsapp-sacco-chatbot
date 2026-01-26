@@ -97,13 +97,28 @@ function processMessage(from, message) {
 app.post("/webhook", (req, res) => {
   const { from, message } = req.body;
 
-  if (!from || !message) {
-    return res.status(400).json({ error: "Invalid request" });
+  let reply = "";
+
+  if (!message) {
+    reply = "Welcome to SACCO Assist 👋\nReply with:\n1️⃣ Join SACCO\n2️⃣ Check Balance\n3️⃣ Save Money\n4️⃣ Help";
+  } 
+  else if (message === "1") {
+    reply = "✅ Registration coming soon.\nPlease send your name.";
+  } 
+  else if (message === "2") {
+    reply = "💰 Your balance is UGX 0 (demo)";
+  } 
+  else if (message === "3") {
+    reply = "💵 How much do you want to save?";
+  } 
+  else if (message === "4") {
+    reply = "📞 SACCO Assist Help:\nReply 1–4 to continue.";
+  } 
+  else {
+    reply = "❌ Invalid option.\nReply with:\n1️⃣ Join\n2️⃣ Balance\n3️⃣ Save\n4️⃣ Help";
   }
 
-  const reply = processMessage(from, message);
   console.log("Reply:", reply);
-
   res.json({ reply });
 });
 
