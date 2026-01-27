@@ -1,18 +1,22 @@
 app.post("/webhook", (req, res) => {
-  const message = req.body.message;
-  const from = req.body.from;
+  const { from, message } = req.body;
+  let reply = "";
 
-  const reply = processMessage(from, message);
+  if (message === "1") {
+    reply = "📝 Please reply with your FULL NAME to register.";
+    return res.json({ reply });
+  }
 
-  console.log("Reply:", reply);
+  // If message is a name (not number)
+  if (message && isNaN(message)) {
+    registerMember(from, message, (response) => {
+      res.json({ reply: response });
+    });
+    return;
+  }
+
+  reply =
+    "👋 Welcome to SACCO Assist\nReply with:\n1️⃣ Join SACCO\n2️⃣ Check Balance\n3️⃣ Save Money\n4️⃣ Help";
+
   res.json({ reply });
-});
-
-app.get("/", (req, res) => {
-  res.send("SACCO Assist webhook is running ✅");
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
 });
