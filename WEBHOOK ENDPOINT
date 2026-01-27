@@ -1,22 +1,24 @@
+
 app.post("/webhook", (req, res) => {
-  const { from, message } = req.body;
-  let reply = "";
+  try {
+    const entry = req.body.entry?.[0];
+    const change = entry?.changes?.[0];
+    const messageObj = change?.value?.messages?.[0];
 
-  if (message === "1") {
-    reply = "📝 Please reply with your FULL NAME to register.";
-    return res.json({ reply });
+    if (!messageObj) {
+      return res.sendStatus(200);
+    }
+
+    const from = messageObj.from;
+    const message = messageObj.text?.body;
+
+    console.log("📩 From:", from);
+    console.log("💬 Message:", message);
+
+    // TEMP reply (Meta response comes later)
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.sendStatus(500);
   }
-
-  // If message is a name (not number)
-  if (message && isNaN(message)) {
-    registerMember(from, message, (response) => {
-      res.json({ reply: response });
-    });
-    return;
-  }
-
-  reply =
-    "👋 Welcome to SACCO Assist\nReply with:\n1️⃣ Join SACCO\n2️⃣ Check Balance\n3️⃣ Save Money\n4️⃣ Help";
-
-  res.json({ reply });
 });
