@@ -136,3 +136,20 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
+function registerMember(phone, name, callback) {
+  const memberId = "SACCO-" + Math.floor(100000 + Math.random() * 900000);
+
+  const sql = `
+    INSERT INTO members (phone, name, member_id)
+    VALUES (?, ?, ?)
+  `;
+
+  db.run(sql, [phone, name, memberId], function (err) {
+    if (err) {
+      callback("❌ You are already registered.");
+    } else {
+      callback(`✅ Welcome ${name}!\nYour Member ID: ${memberId}`);
+    }
+  });
+}
+
