@@ -15,3 +15,29 @@
     "sqlite3": "^5.1.6"
   }
 }
+Rule ID: GOV-001
+Category: Governance & Access
+Risk Level: High
+Applies To: All SACCOs
+
+Rule Description:
+No single user should both create and approve a loan.
+
+Why This Matters:
+Prevents fraud and meets good governance practices.
+
+Trigger Condition:
+If loan.created_by == loan.approved_by
+
+System Action:
+- Block approval
+- Raise critical alert
+- Log evidence
+
+Recommended Remediation:
+Assign a second officer to approve the loan.
+
+Evidence Collected:
+- User IDs
+- Loan ID
+- Timestamp
