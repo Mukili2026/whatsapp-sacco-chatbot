@@ -9,3 +9,7 @@ whatsapp-sacco-chatbot/
 │   └── saccoAssistApi.js
 └── index.js
 
+config/
+ └── saccoAssist.config.js
+utils/
+ └── messageFormatter.js
