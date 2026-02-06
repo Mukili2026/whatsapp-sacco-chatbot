@@ -1,0 +1,10 @@
+whatsapp-sacco-chatbot/
+├── webhook/
+├── flows/
+│   ├── request_loan.js
+│   ├── check_balance.js
+│   └── approve_prompt.js
+├── services/
+│   └── saccoAssistApi.js
+└── index.js
+
