@@ -53,5 +53,5 @@ async function approveLoan(userId, loanId) {
   return `✅ Loan approved successfully.`;
 }
 
-module.exports = { approveLoan };
+
 
