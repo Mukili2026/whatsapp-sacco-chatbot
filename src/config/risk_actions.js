@@ -57,3 +57,11 @@ module.exports = {
   RISK_ACTIONS,
   getRiskAction
 };
+return {
+  status: "FAILED",
+  risk: "HIGH",
+  message: "Same user approved and created the loan"
+};
+const { getRiskAction } = require("../config/risk_actions");
+
+const actionPlan = getRiskAction(ruleResult.risk);
